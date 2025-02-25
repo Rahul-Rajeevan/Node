@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Products</h1>
+    <div id="box"></div>
+
+    <script>
+        //write fetch request to get product data
+        function getProducts() {
+            fetch('http://localhost:3000/products')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    data.forEach(product => {
+                        const box=document.createElement('div');
+                        const h2 = document.createElement('h2');
+                        h2.textContent = product;
+                        // add 2 buttons for delete and edit and style them
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => {
+                            // delete product from the server
+                            fetch(`http://localhost:3000/products/${product}`, { method: 'DELETE' });
+                            box.remove();
+                        };
+
+                        const editButton = document.createElement('button');
+                        editButton.textContent = 'Edit';
+                        editButton.onclick = () => {
+                            // edit product from the server
+                            const newProduct = prompt('Enter new product name');
+                            fetch(`http://localhost:3000/products/${product}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ product: newProduct })
+                            });
+                            h2.textContent = newProduct;
+                        };
+                        box.append(h2,deleteButton,editButton);
+                        document.querySelector("div#box").appendChild(box);
+                    });
+                });
+        }
+        getProducts();
+    </script>
+</body>
+
+</html>
